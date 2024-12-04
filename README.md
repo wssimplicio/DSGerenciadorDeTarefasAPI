@@ -42,4 +42,4 @@ Este projeto é uma API de Gerenciamento de tarefas com as operações de CRUD
 
 ## Screenshots
 
-![App Screenshot](https://drive.google.com/file/d/1df8AQVme67V18U1S_PvYHjYR2j2k6MUF/view?usp=drive_link)
+![App Screenshot](GerenciadorDeTarefas-DS/assets/swagger.png)
