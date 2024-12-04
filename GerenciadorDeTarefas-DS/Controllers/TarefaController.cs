@@ -1,4 +1,5 @@
-﻿using GerenciadorDeTarefas_DS.Domain.DTO;
+﻿using GerenciadorDeTarefas_DS.Application.Services;
+using GerenciadorDeTarefas_DS.Domain.DTO;
 using GerenciadorDeTarefas_DS.Domain.Models;
 using GerenciadorDeTarefas_DS.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -10,82 +11,76 @@ namespace GerenciadorDeTarefas_DS.Controllers
     public class TarefaController : Controller
     {
 
-        private readonly ITarefaRepository _tarefaRepository;
+        private readonly TarefaService _tarefaService;
 
-        public TarefaController(ITarefaRepository tarefaRepository)
+        public TarefaController(TarefaService tarefaService)
         {
-            _tarefaRepository = tarefaRepository ?? throw new ArgumentNullException(nameof(tarefaRepository));
+            _tarefaService = tarefaService ?? throw new ArgumentNullException(nameof(tarefaService));
         }
 
         [HttpPost]
         public IActionResult Add(TarefaCreateDTO tarefaCreateDTO)
         {
-            var tarefa = new Tarefas(
-                tarefaCreateDTO.titulo,
-                tarefaCreateDTO.descricao, 
-                DateTime.Now,
-                null,
-                tarefaCreateDTO.status
-                );
-
-            var result = _tarefaRepository.Add( tarefa );
+            var result = _tarefaService.Add(tarefaCreateDTO);
 
             if (result.Success)
             {
-                return Ok(new { message = result.Message, data = result.Data });
+                return Ok(result);
             }
 
-            return BadRequest(new { message = result.Message });
+            return BadRequest(result);
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var tarefas = _tarefaRepository.GetAll();
+            var result = _tarefaService.GetAll();
 
-            return Ok(tarefas);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         [HttpGet("status/{status}")]
         public IActionResult GetByStatus(string status)
         {
-            var tarefas = _tarefaRepository.GetByStatus(status);
+            var result = _tarefaService.GetByStatus(status);
 
-            return Ok(tarefas);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         [HttpPut("{id:int}")]
-        public IActionResult Put(int id, [FromBody] TarefaUpdateDTO tarefaUpdateDTO) 
+        public IActionResult Update(int id, [FromBody] TarefaUpdateDTO tarefaUpdateDTO) 
         {
-            var tarefa = new Tarefas(
-                tarefaUpdateDTO.titulo,
-                tarefaUpdateDTO.descricao,
-                tarefaUpdateDTO.dataconcriacao,
-                tarefaUpdateDTO.dataconclusao,
-                tarefaUpdateDTO.status
-                );
-
-            var result = _tarefaRepository.Put(id, tarefa);
+            var result = _tarefaService.Update(id, tarefaUpdateDTO);
  
             if (result.Success)
             {
-                return Ok(new { message = result.Message });
+                return Ok(result);
             }
 
-            return BadRequest(new { message = result.Message });
+            return BadRequest(result);
         }
 
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
-            var result = _tarefaRepository.Delete(id);
+            var result = _tarefaService.Delete(id);
 
             if (result.Success)
             {
-                return Ok(new { message = result.Message });
+                return Ok(result);
             }
 
-            return NotFound(new { message = result.Message });
+            return NotFound(result);
         }
     }
 }

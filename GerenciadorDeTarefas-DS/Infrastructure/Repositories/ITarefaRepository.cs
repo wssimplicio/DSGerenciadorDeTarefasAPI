@@ -5,14 +5,16 @@ namespace GerenciadorDeTarefas_DS.Infrastructure.Repositories
 {
     public interface ITarefaRepository
     {
-        ResponseData Add(Tarefas tarefa);
+        Tarefas Add(Tarefas tarefa);
 
-        ResponseData GetAll();
+        List<Tarefas> GetAll();
 
-        ResponseData GetByStatus(string status);
+        List<Tarefas> GetByStatus(string status);
 
-        ResponseData Put(int id, Tarefas tarefa);
+        Tarefas GetById(int id);
 
-        ResponseData Delete(int id);
+        Boolean Update(Tarefas tarefa);
+
+        Boolean Delete(Tarefas tarefa);
     }
 }

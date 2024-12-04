@@ -1,3 +1,4 @@
+using GerenciadorDeTarefas_DS.Application.Services;
 using GerenciadorDeTarefas_DS.Infrastructure;
 using GerenciadorDeTarefas_DS.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<DbConnection>(options =>
 
 //Injeção de Dependencia
 builder.Services.AddTransient<ITarefaRepository, TarefaRepository>();
+builder.Services.AddTransient<TarefaService>();
 
 //Liberação Cors
 builder.Services.AddCors(options =>

@@ -15,135 +15,45 @@ namespace GerenciadorDeTarefas_DS.Infrastructure.Repositories
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
-        public ResponseData Add(Tarefas tarefa)
+        public Tarefas Add(Tarefas tarefa)
         {
-            if (tarefa.titulo.Length > 100)
-            {
-                return new ResponseData
-                {
-                    Success = false,
-                    Message = "O título não pode ter mais de 100 caracteres."
-                };
-            }
-
-            if (!Enum.IsDefined(typeof(Tarefas.StatusTarefa), tarefa.status))
-            {
-                return new ResponseData
-                {
-                    Success = false,
-                    Message = "Status não definido corretamente",
-                };
-            }
+            
             _connection.Tarefas.Add(tarefa);
-            var ret = _connection.SaveChanges();
+            _connection.SaveChanges();
 
-            return new ResponseData
-            {
-                Success = true,
-                Data = tarefa,
-            };
+            return tarefa;
 
         }
 
-        public ResponseData GetByStatus(string status)
+        public List<Tarefas> GetByStatus(string status)
         {
-            return new ResponseData
-            {
-                Success = true,
-                Data = _connection.Tarefas
-                .Where(t => t.status == status)
-                .ToList()
-            };
+            return _connection.Tarefas.Where(t => t.status == status).ToList();
         }
 
-        public ResponseData GetAll()
+        public List<Tarefas> GetAll()
         {
-            var listagem = _connection.Tarefas
-                .Select(t => new TarefaViewDTO
-                (
-                    t.id,
-                    t.titulo,
-                    t.descricao,
-                    t.datacriacao,
-                    t.dataconclusao,
-                    t.status
-                ))
-                .ToList();
-
-            return new ResponseData
-            {
-                Success = true,
-                Data = listagem
-            };
+            return _connection.Tarefas.ToList();
         }
 
-        public ResponseData Put(int id, Tarefas tarefa)
+        public Tarefas GetById(int id)
         {
-            var tarefaExistente = _connection.Tarefas.Find(id);
-
-            if (tarefaExistente != null)
-            {
-                if (!Enum.IsDefined(typeof(Tarefas.StatusTarefa), tarefa.status))
-                {
-                    return new ResponseData
-                    {
-                        Success = false,
-                        Message = "Status não definido corretamente",
-                    };
-                }
-                if (tarefa.titulo.Length > 100)
-                {
-                    return new ResponseData
-                    {
-                        Success = false,
-                        Message = "O título não pode ter mais de 100 caracteres."
-                    };
-                }
-                tarefaExistente.titulo = tarefa.titulo;
-                tarefaExistente.descricao = tarefa.descricao;
-                if (tarefa.status == "Concluido")
-                {
-                    tarefaExistente.dataconclusao = DateTime.Now;
-                }
-                tarefaExistente.status = tarefa.status;
-
-                _connection.Tarefas.Update(tarefaExistente);
-                _connection.SaveChanges();
-
-                return new ResponseData
-                {
-                    Success = true,
-                    Message = "Tarefa Atualizada!"
-                };
-            }
-            return new ResponseData
-            {
-                Success = false,
-                Message = "Tarefa Não encontrada!"
-            };
-
+            return _connection.Tarefas.Find(id);
         }
 
-        public ResponseData Delete(int id)
+        public Boolean Update(Tarefas tarefa)
         {
-            var tarefa = _connection.Tarefas.Find(id);
+            _connection.Tarefas.Update(tarefa);
+            _connection.SaveChanges();
 
-            if (tarefa != null)
-            {
-               _connection.Tarefas.Remove(tarefa);
-               _connection.SaveChanges();
-                return new ResponseData
-                {
-                    Success = true,
-                    Message = "Tarefa Deletada!"
-                };
-            }
-            return new ResponseData
-            {
-                Success = false,
-                Message = "Tarefa não encontrada!"
-            };
+            return true;
+        }
 
+        public Boolean Delete(Tarefas tarefa)
+        {
+            _connection.Tarefas.Remove(tarefa);
+            _connection.SaveChanges();
+
+            return true;
         }
     }
 }
